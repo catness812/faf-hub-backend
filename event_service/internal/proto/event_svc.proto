@@ -1,0 +1,17 @@
+syntax="proto3";
+
+option go_package="./pb";
+import "event_msg.proto";
+import "google/protobuf/empty.proto";
+
+package proto;
+
+service EventService {
+    rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse);
+    rpc EditEvent(EditEventRequest) returns (EditEventResponse);
+    rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse);
+    rpc GetEvent(GetEventRequest) returns (GetEventResponse);
+    rpc GetEvents(google.protobuf.Empty) returns (GetEventsResponse);
+    rpc RegisterForEvent(RegisterForEventRequest) returns (RegisterForEventResponse);
+    rpc GetEventRegistrations(GetEventRegistrationsRequest) returns (GetEventRegistrationsResponse);
+}

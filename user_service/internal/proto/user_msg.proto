@@ -1,0 +1,72 @@
+syntax="proto3";
+
+option go_package="./pb";
+
+package proto;
+
+message User {
+    string email = 1;
+    string password = 2;
+    int32 phone_number = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string academic_group = 6;
+    bool admin = 7;
+}
+
+message UserInfo {
+    string email = 1;
+    int32 phone_number = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string academic_group = 5;
+}
+
+message CreateUserRequest {
+    User user = 1;
+}
+
+message CreateUserResponse {
+    string message = 1;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string message = 1;
+    int32 user_id = 2;
+}
+
+message GetUserRequest {
+    int32 user_id = 1;
+}
+
+message GetUserResponse {
+    User user = 1;
+}
+
+message GoogleAuthRequest {
+    string email = 1;
+    string first_name = 2;
+    string last_name = 3;
+}
+
+message UpdateUserRequest {
+    int32 user_id = 1;
+    UserInfo user = 2;
+}
+
+message UpdateUserResponse {
+    string message = 1;
+}
+
+message CheckAdminRequest {
+    int32 user_id = 1;
+}
+
+message CheckAdminResponse {
+    bool admin = 1;
+}

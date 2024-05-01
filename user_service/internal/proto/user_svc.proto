@@ -1,0 +1,15 @@
+syntax="proto3";
+
+option go_package="./pb";
+import "user_msg.proto";
+
+package proto;
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+    rpc GoogleAuth(GoogleAuthRequest) returns (LoginResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc CheckAdmin(CheckAdminRequest) returns (CheckAdminResponse);
+}
