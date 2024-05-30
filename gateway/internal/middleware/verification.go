@@ -34,3 +34,17 @@ func CheckIfUser() fiber.Handler {
 		}
 	}
 }
+
+func CheckIfVerified() fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		status, err := util.CheckVerified(ctx)
+		if err != nil {
+			return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": err})
+		} else {
+			if status == false {
+				return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": "user not verified"})
+			}
+			return ctx.Next()
+		}
+	}
+}

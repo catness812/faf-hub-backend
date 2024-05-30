@@ -70,7 +70,7 @@ func CheckAdmin(ctx *fiber.Ctx) (bool, error) {
 		return false, err
 	}
 
-	conn, err := grpc.Dial(os.Getenv("APP_HOST")+":"+os.Getenv("USER_SVC_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("user_svc"+":"+os.Getenv("USER_SVC_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return false, err
 	}
@@ -88,4 +88,30 @@ func CheckAdmin(ctx *fiber.Ctx) (bool, error) {
 	}
 
 	return res.Admin, nil
+}
+
+func CheckVerified(ctx *fiber.Ctx) (bool, error) {
+	userID, err := CurrentUserID(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	conn, err := grpc.NewClient("user_svc"+":"+os.Getenv("USER_SVC_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return false, err
+	}
+	defer conn.Close()
+
+	c, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
+
+	res, err := pb.NewUserServiceClient(conn).CheckVerified(c, &pb.CheckVerifiedRequest{
+		UserId: int32(userID),
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	return res.Verified, nil
 }

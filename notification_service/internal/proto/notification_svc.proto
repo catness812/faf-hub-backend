@@ -1,0 +1,11 @@
+syntax="proto3";
+
+option go_package="./pb";
+import "notification_msg.proto";
+import "google/protobuf/empty.proto";
+
+package proto;
+
+service NotificationService {
+    rpc Publish(PublishRequest) returns (google.protobuf.Empty);
+}

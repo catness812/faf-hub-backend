@@ -12,6 +12,7 @@ message User {
     string last_name = 5;
     string academic_group = 6;
     bool admin = 7;
+    bool verified = 8;
 }
 
 message UserInfo {
@@ -69,4 +70,20 @@ message CheckAdminRequest {
 
 message CheckAdminResponse {
     bool admin = 1;
+}
+
+message CheckVerifiedRequest {
+    int32 user_id = 1;
+}
+
+message CheckVerifiedResponse {
+    bool verified = 1;
+}
+
+message VerifyRequest {
+    int32 user_id = 1;
+}
+
+message VerifyResponse {
+    string message = 1;
 }

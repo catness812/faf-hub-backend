@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/catness812/faf-hub-backend/gateway/internal/config"
+	pb2 "github.com/catness812/faf-hub-backend/gateway/internal/notification/pb"
 	"github.com/catness812/faf-hub-backend/gateway/internal/user/pb"
 	"github.com/catness812/faf-hub-backend/gateway/internal/util"
 	"github.com/catness812/faf-hub-backend/gateway/models"
@@ -15,19 +18,24 @@ import (
 	"github.com/gookit/slog"
 )
 
-type IUserService interface {
-	SaveJWT(userID int, jwt string) error
+type IRedisService interface {
+	Save(email string, passcode string) error
+	ValidatePasscode(email string, passcode string) error
+	Subscribe(email string) error
+	Unsubscribe(email string) error
 }
 
 type UserController struct {
-	client  pb.UserServiceClient
-	userSvc IUserService
+	client             pb.UserServiceClient
+	notificationClient pb2.NotificationServiceClient
+	redisSvc           IRedisService
 }
 
-func NewUserController(client pb.UserServiceClient, userSvc IUserService) *UserController {
+func NewUserController(client pb.UserServiceClient, notificationClient pb2.NotificationServiceClient, redisSvc IRedisService) *UserController {
 	return &UserController{
-		client:  client,
-		userSvc: userSvc,
+		client:             client,
+		notificationClient: notificationClient,
+		redisSvc:           redisSvc,
 	}
 }
 
@@ -251,4 +259,141 @@ func (ctrl *UserController) Logout(ctx *fiber.Ctx) error {
 
 	slog.Info("User logged out successfully")
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "user logged out successfully"})
+}
+
+func (ctrl *UserController) SendVerification(ctx *fiber.Ctx) error {
+	id, err := util.CurrentUserID(ctx)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
+
+	res, err := ctrl.client.GetUser(c, &pb.GetUserRequest{
+		UserId: int32(id),
+	})
+
+	if err != nil {
+		slog.Errorf("Error retrieving user: %v", err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	passcode := strconv.Itoa(rand.Intn(900000) + 100000)
+	if err := ctrl.redisSvc.Save(res.User.Email, passcode); err != nil {
+		slog.Errorf("Error saving verification credentials: %v", err.Error())
+	}
+
+	body := res.User.Email + ";" + passcode
+
+	_, err = ctrl.notificationClient.Publish(c, &pb2.PublishRequest{
+		QueueName: "verification",
+		Body:      body,
+	})
+	if err != nil {
+		slog.Errorf("Error publishing verification email: %v", err.Error())
+	}
+
+	slog.Info("User verification sent successfully")
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "user verification sent"})
+}
+
+func (ctrl *UserController) CompleteVerification(ctx *fiber.Ctx) error {
+	type Passcode struct {
+		Passcode string `json:"passcode"`
+	}
+
+	var passcode Passcode
+
+	if err := ctx.BodyParser(&passcode); err != nil {
+		slog.Errorf("Invalid request format: %v", err)
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	id, err := util.CurrentUserID(ctx)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
+
+	res, err := ctrl.client.GetUser(c, &pb.GetUserRequest{
+		UserId: int32(id),
+	})
+
+	if err != nil {
+		slog.Errorf("Error retrieving user: %v", err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	if err := ctrl.redisSvc.ValidatePasscode(res.User.Email, passcode.Passcode); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	res2, err := ctrl.client.VerifyUser(c, &pb.VerifyRequest{
+		UserId: int32(id),
+	})
+
+	if err != nil {
+		slog.Errorf("Error updating verified user status: %v", err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	slog.Info("User verified successfully")
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": res2.Message})
+}
+
+func (ctrl *UserController) Subscribe(ctx *fiber.Ctx) error {
+	id, err := util.CurrentUserID(ctx)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
+
+	res, err := ctrl.client.GetUser(c, &pb.GetUserRequest{
+		UserId: int32(id),
+	})
+
+	if err != nil {
+		slog.Errorf("Error retrieving user: %v", err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	if err := ctrl.redisSvc.Subscribe(res.User.Email); err != nil {
+		slog.Errorf("Error subscribing user: %v", err.Error())
+		return err
+	}
+
+	slog.Info("User subscribed to newsletter successfully")
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "user subscribed to newsletter"})
+}
+
+func (ctrl *UserController) Unsubscribe(ctx *fiber.Ctx) error {
+	id, err := util.CurrentUserID(ctx)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
+
+	res, err := ctrl.client.GetUser(c, &pb.GetUserRequest{
+		UserId: int32(id),
+	})
+
+	if err != nil {
+		slog.Errorf("Error retrieving user: %v", err.Error())
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	if err := ctrl.redisSvc.Unsubscribe(res.User.Email); err != nil {
+		slog.Errorf("Error unsubscribing user: %v", err.Error())
+		return err
+	}
+
+	slog.Info("User unsubscribed from newsletter successfully")
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "user unsubscribed to newsletter"})
 }

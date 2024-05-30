@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/catness812/faf-hub-backend/user_service/internal/models"
 	"github.com/gookit/slog"
@@ -31,12 +32,16 @@ func connect() *gorm.DB {
 		os.Getenv("DB_PORT"),
 	)
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		slog.Error(err)
-	} else {
-		slog.Info("Successfully connected to the Postgres database")
+	for i := 0; i < 5; i++ {
+		database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err != nil {
+			time.Sleep(3 * time.Second)
+		} else {
+			slog.Info("Successfully connected to the Postgres database")
+			return database
+		}
 	}
 
-	return database
+	slog.Fatalf("Could not connect to the database after %d attempts: %v", 3, err)
+	return nil
 }

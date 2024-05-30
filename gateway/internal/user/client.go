@@ -1,8 +1,6 @@
 package user
 
 import (
-	"os"
-
 	"github.com/catness812/faf-hub-backend/gateway/internal/user/pb"
 	"github.com/gookit/slog"
 	"google.golang.org/grpc"
@@ -10,7 +8,7 @@ import (
 )
 
 func InitUserServiceClient(userSvcPort string) pb.UserServiceClient {
-	conn, err := grpc.Dial(os.Getenv("APP_HOST")+":"+userSvcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("user_svc"+":"+userSvcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		slog.Fatalf("Could not connect: %v", err)

@@ -13,6 +13,7 @@ type IEventRepository interface {
 	GetEventByID(eventID uint) (models.Event, error)
 	DeleteEvent(eventID uint) error
 	GetEvents() ([]models.Event, error)
+	GetEventsByIDs(eventIDs []uint) ([]models.Event, error)
 }
 
 type EventService struct {
@@ -77,8 +78,7 @@ func (svc *EventService) UpdateEvent(eventID uint, event models.Event) error {
 }
 
 func (svc *EventService) DeleteEvent(eventID uint) error {
-	_, err := svc.eventRepository.GetEventByID(eventID)
-	if err != nil {
+	if _, err := svc.eventRepository.GetEventByID(eventID); err != nil {
 		slog.Errorf("Could not retrieve event: %v", err)
 		return err
 	}

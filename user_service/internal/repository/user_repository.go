@@ -56,15 +56,3 @@ func (repo *UserRepository) UpdateUser(user models.User) error {
 	}
 	return nil
 }
-
-func (repo *UserRepository) CheckAdmin(userID uint) (bool, error) {
-	var user models.User
-	if err := repo.db.Where("ID = ?", userID).First(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return false, fmt.Errorf("user doesn't exist")
-		} else {
-			return false, err
-		}
-	}
-	return user.Admin, nil
-}

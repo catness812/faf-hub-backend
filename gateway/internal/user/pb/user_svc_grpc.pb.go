@@ -19,12 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName = "/proto.UserService/CreateUser"
-	UserService_Login_FullMethodName      = "/proto.UserService/Login"
-	UserService_GetUser_FullMethodName    = "/proto.UserService/GetUser"
-	UserService_GoogleAuth_FullMethodName = "/proto.UserService/GoogleAuth"
-	UserService_UpdateUser_FullMethodName = "/proto.UserService/UpdateUser"
-	UserService_CheckAdmin_FullMethodName = "/proto.UserService/CheckAdmin"
+	UserService_CreateUser_FullMethodName    = "/proto.UserService/CreateUser"
+	UserService_Login_FullMethodName         = "/proto.UserService/Login"
+	UserService_GetUser_FullMethodName       = "/proto.UserService/GetUser"
+	UserService_GoogleAuth_FullMethodName    = "/proto.UserService/GoogleAuth"
+	UserService_UpdateUser_FullMethodName    = "/proto.UserService/UpdateUser"
+	UserService_CheckAdmin_FullMethodName    = "/proto.UserService/CheckAdmin"
+	UserService_CheckVerified_FullMethodName = "/proto.UserService/CheckVerified"
+	UserService_VerifyUser_FullMethodName    = "/proto.UserService/VerifyUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -37,6 +39,8 @@ type UserServiceClient interface {
 	GoogleAuth(ctx context.Context, in *GoogleAuthRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	CheckAdmin(ctx context.Context, in *CheckAdminRequest, opts ...grpc.CallOption) (*CheckAdminResponse, error)
+	CheckVerified(ctx context.Context, in *CheckVerifiedRequest, opts ...grpc.CallOption) (*CheckVerifiedResponse, error)
+	VerifyUser(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error)
 }
 
 type userServiceClient struct {
@@ -101,6 +105,24 @@ func (c *userServiceClient) CheckAdmin(ctx context.Context, in *CheckAdminReques
 	return out, nil
 }
 
+func (c *userServiceClient) CheckVerified(ctx context.Context, in *CheckVerifiedRequest, opts ...grpc.CallOption) (*CheckVerifiedResponse, error) {
+	out := new(CheckVerifiedResponse)
+	err := c.cc.Invoke(ctx, UserService_CheckVerified_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) VerifyUser(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error) {
+	out := new(VerifyResponse)
+	err := c.cc.Invoke(ctx, UserService_VerifyUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -111,6 +133,8 @@ type UserServiceServer interface {
 	GoogleAuth(context.Context, *GoogleAuthRequest) (*LoginResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	CheckAdmin(context.Context, *CheckAdminRequest) (*CheckAdminResponse, error)
+	CheckVerified(context.Context, *CheckVerifiedRequest) (*CheckVerifiedResponse, error)
+	VerifyUser(context.Context, *VerifyRequest) (*VerifyResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have forward compatible implementations.
@@ -134,6 +158,12 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) CheckAdmin(context.Context, *CheckAdminRequest) (*CheckAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckAdmin not implemented")
+}
+func (UnimplementedUserServiceServer) CheckVerified(context.Context, *CheckVerifiedRequest) (*CheckVerifiedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckVerified not implemented")
+}
+func (UnimplementedUserServiceServer) VerifyUser(context.Context, *VerifyRequest) (*VerifyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUser not implemented")
 }
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -255,6 +285,42 @@ func _UserService_CheckAdmin_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CheckVerified_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckVerifiedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckVerified(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CheckVerified_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckVerified(ctx, req.(*CheckVerifiedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_VerifyUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).VerifyUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_VerifyUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).VerifyUser(ctx, req.(*VerifyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -285,6 +351,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckAdmin",
 			Handler:    _UserService_CheckAdmin_Handler,
+		},
+		{
+			MethodName: "CheckVerified",
+			Handler:    _UserService_CheckVerified_Handler,
+		},
+		{
+			MethodName: "VerifyUser",
+			Handler:    _UserService_VerifyUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

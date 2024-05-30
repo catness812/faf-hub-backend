@@ -1,0 +1,64 @@
+syntax="proto3";
+
+option go_package="./pb";
+import "google/protobuf/timestamp.proto";
+
+package proto;
+
+message Content {
+    int32 content_id = 1;
+    string type = 2;
+    string name = 3;
+    google.protobuf.Timestamp date = 4;
+    string authors = 5;
+    string cover = 6;
+    string text = 7;
+    int32 views = 8;
+    repeated string images = 9; 
+}
+
+message PostContentRequest {
+    Content content = 1;
+}
+
+message PostContentResponse {
+    string message = 1;
+    int32 content_id = 2;
+}
+
+message EditContentRequest {
+    int32 content_id = 1;
+    string name = 2;
+    string authors = 3;
+    string cover = 4;
+    string text = 5;
+    repeated string images = 6; 
+}
+
+message EditContentResponse {
+    string message = 1;
+}
+
+message DeleteContentRequest {
+    int32 content_id = 1;
+}
+
+message DeleteContentResponse {
+    string message = 1;
+}
+
+message GetContentRequest {
+    int32 content_id = 1;
+}
+
+message GetContentResponse {
+    Content content = 1;
+}
+
+message GetAllContentRequest {
+    string type = 1;
+}
+
+message GetAllContentResponse {
+    repeated Content content = 1;
+}

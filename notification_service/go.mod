@@ -1,0 +1,36 @@
+module github.com/catness812/faf-hub-backend/notification_service
+
+go 1.21.0
+
+require (
+	github.com/gookit/slog v0.5.6 // direct
+	github.com/joho/godotenv v1.5.1 // direct
+	github.com/streadway/amqp v1.1.0 // direct
+)
+
+require (
+	github.com/aymerick/raymond v2.0.2+incompatible
+	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.0.1
+	github.com/prometheus/client_golang v1.19.1
+	google.golang.org/grpc v1.64.0
+	google.golang.org/protobuf v1.34.1
+)
+
+require (
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/gookit/color v1.5.4 // indirect
+	github.com/gookit/goutil v0.6.15 // indirect
+	github.com/gookit/gsr v0.1.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 // indirect
+	github.com/prometheus/client_model v0.5.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
+)

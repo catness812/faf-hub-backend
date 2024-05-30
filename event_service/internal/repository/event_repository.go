@@ -63,3 +63,12 @@ func (repo *EventRepository) GetEvents() ([]models.Event, error) {
 	}
 	return events, nil
 }
+
+// needs rework
+func (repo *EventRepository) GetEventsByIDs(eventIDs []uint) ([]models.Event, error) {
+	var events []models.Event
+	if err := repo.db.Where("id IN ?", eventIDs).Find(&events).Error; err != nil {
+		return nil, err
+	}
+	return events, nil
+}

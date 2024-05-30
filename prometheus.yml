@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: user
+    honor_timestamps: true
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - user_svc:${USER_SVC_PORT}
+  - job_name: event
+    honor_timestamps: true
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - event_svc:${EVENT_SVC_PORT}
+  - job_name: content
+    honor_timestamps: true
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - content_svc:${CONTENT_SVC_PORT}
+  - job_name: notification
+    honor_timestamps: true
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - notification_svc:${NOTIFICATION_SVC_PORT}

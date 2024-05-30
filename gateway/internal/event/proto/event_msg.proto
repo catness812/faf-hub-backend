@@ -29,6 +29,7 @@ message EventRegistration {
     string food_pref = 10;
     string motivation = 11;
     string questions = 12;
+    string feedback = 13;
 }
 
 message CreateEventRequest {
@@ -41,8 +42,7 @@ message CreateEventResponse {
 }
 
 message EditEventRequest {
-    int32 event_id = 1;
-    Event event = 2;
+    Event event = 1;
 }
 
 message EditEventResponse {
@@ -83,4 +83,29 @@ message GetEventRegistrationsRequest {
 
 message GetEventRegistrationsResponse {
     repeated EventRegistration registrations = 1;
+}
+
+message GetEventUserRegistrationRequest {
+    int32 event_id = 1;
+    int32 user_id = 2;
+}
+
+message GetEventUserRegistrationResponse {
+    EventRegistration registration = 1;
+}
+
+message GetUserEventsRequest {
+    int32 user_id = 1;
+}
+
+message GetUserEventsResponse {
+    repeated Event events = 1;
+}
+
+message EditRegistrationRequest {
+    EventRegistration registration = 1;
+}
+
+message EditRegistrationResponse {
+    string message = 1;
 }

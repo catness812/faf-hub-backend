@@ -13,7 +13,7 @@ type IUserService interface {
 	GetUserByID(userID uint) (models.User, error)
 	GoogleLogUser(email string, firstName string, lastName string) (uint, error)
 	UpdateUser(userID uint, user models.UserInfo) error
-	CheckAdmin(userID uint) (bool, error)
+	VerifyUser(userID uint) error
 }
 
 type Server struct {
@@ -29,6 +29,7 @@ func (s *Server) CreateUser(_ context.Context, req *pb.CreateUserRequest) (*pb.C
 		FirstName:     req.User.FirstName,
 		LastName:      req.User.LastName,
 		AcademicGroup: req.User.AcademicGroup,
+		Verified:      false,
 	}
 
 	if req.User.Email == "board.faf@gmail.com" {
@@ -106,12 +107,33 @@ func (s *Server) UpdateUser(_ context.Context, req *pb.UpdateUserRequest) (*pb.U
 }
 
 func (s *Server) CheckAdmin(_ context.Context, req *pb.CheckAdminRequest) (*pb.CheckAdminResponse, error) {
-	status, err := s.UserService.CheckAdmin(uint(req.UserId))
+	user, err := s.UserService.GetUserByID(uint(req.UserId))
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.CheckAdminResponse{
-		Admin: status,
+		Admin: user.Admin,
+	}, nil
+}
+
+func (s *Server) CheckVerified(_ context.Context, req *pb.CheckVerifiedRequest) (*pb.CheckVerifiedResponse, error) {
+	user, err := s.UserService.GetUserByID(uint(req.UserId))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CheckVerifiedResponse{
+		Verified: user.Verified,
+	}, nil
+}
+
+func (s *Server) VerifyUser(_ context.Context, req *pb.VerifyRequest) (*pb.VerifyResponse, error) {
+	if err := s.UserService.VerifyUser(uint(req.UserId)); err != nil {
+		return nil, err
+	}
+
+	return &pb.VerifyResponse{
+		Message: "user verified successfully",
 	}, nil
 }

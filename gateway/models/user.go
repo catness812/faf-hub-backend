@@ -11,8 +11,7 @@ type User struct {
 	LastName      string `json:"last_name"`
 	AcademicGroup string `json:"academic_group"`
 	Admin         bool   `gorm:"not null" json:"admin"`
-	// Logged        bool   `gorm:"not null" json:"logged"`
-	// Events        []Event
+	Verified      bool   `gorm:"not null" json:"verified"`
 }
 
 type UserInfo struct {

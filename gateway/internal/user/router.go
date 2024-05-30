@@ -13,6 +13,10 @@ func RegisterUserRoutes(r *fiber.App, userCtrl *UserController, userClient pb.Us
 	route.Get("", middleware.JWTAuth(), userCtrl.GetUser)
 	route.Get("/google_auth", userCtrl.GoogleAuth)
 	route.Get("/google_callback", userCtrl.GoogleCallback)
-	route.Post("/update", middleware.JWTAuth(), userCtrl.UpdateUser)
+	route.Post("/update", middleware.JWTAuth(), middleware.CheckIfVerified(), userCtrl.UpdateUser)
 	route.Get("/logout", middleware.JWTAuth(), userCtrl.Logout)
+	route.Get("/subscribe", middleware.JWTAuth(), middleware.CheckIfVerified(), userCtrl.Subscribe)
+	route.Get("/unsubscribe", middleware.JWTAuth(), middleware.CheckIfVerified(), userCtrl.Unsubscribe)
+	route.Get("/send-verification", middleware.JWTAuth(), userCtrl.SendVerification)
+	route.Post("/complete-verification", middleware.JWTAuth(), userCtrl.CompleteVerification)
 }

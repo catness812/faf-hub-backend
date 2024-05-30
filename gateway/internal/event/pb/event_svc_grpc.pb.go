@@ -20,13 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	EventService_CreateEvent_FullMethodName           = "/proto.EventService/CreateEvent"
-	EventService_EditEvent_FullMethodName             = "/proto.EventService/EditEvent"
-	EventService_DeleteEvent_FullMethodName           = "/proto.EventService/DeleteEvent"
-	EventService_GetEvent_FullMethodName              = "/proto.EventService/GetEvent"
-	EventService_GetEvents_FullMethodName             = "/proto.EventService/GetEvents"
-	EventService_RegisterForEvent_FullMethodName      = "/proto.EventService/RegisterForEvent"
-	EventService_GetEventRegistrations_FullMethodName = "/proto.EventService/GetEventRegistrations"
+	EventService_CreateEvent_FullMethodName              = "/proto.EventService/CreateEvent"
+	EventService_EditEvent_FullMethodName                = "/proto.EventService/EditEvent"
+	EventService_DeleteEvent_FullMethodName              = "/proto.EventService/DeleteEvent"
+	EventService_GetEvent_FullMethodName                 = "/proto.EventService/GetEvent"
+	EventService_GetEvents_FullMethodName                = "/proto.EventService/GetEvents"
+	EventService_RegisterForEvent_FullMethodName         = "/proto.EventService/RegisterForEvent"
+	EventService_GetEventRegistrations_FullMethodName    = "/proto.EventService/GetEventRegistrations"
+	EventService_GetEventUserRegistration_FullMethodName = "/proto.EventService/GetEventUserRegistration"
+	EventService_GetUserEvents_FullMethodName            = "/proto.EventService/GetUserEvents"
+	EventService_EditRegistration_FullMethodName         = "/proto.EventService/EditRegistration"
 )
 
 // EventServiceClient is the client API for EventService service.
@@ -40,6 +43,9 @@ type EventServiceClient interface {
 	GetEvents(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetEventsResponse, error)
 	RegisterForEvent(ctx context.Context, in *RegisterForEventRequest, opts ...grpc.CallOption) (*RegisterForEventResponse, error)
 	GetEventRegistrations(ctx context.Context, in *GetEventRegistrationsRequest, opts ...grpc.CallOption) (*GetEventRegistrationsResponse, error)
+	GetEventUserRegistration(ctx context.Context, in *GetEventUserRegistrationRequest, opts ...grpc.CallOption) (*GetEventUserRegistrationResponse, error)
+	GetUserEvents(ctx context.Context, in *GetUserEventsRequest, opts ...grpc.CallOption) (*GetUserEventsResponse, error)
+	EditRegistration(ctx context.Context, in *EditRegistrationRequest, opts ...grpc.CallOption) (*EditRegistrationResponse, error)
 }
 
 type eventServiceClient struct {
@@ -113,6 +119,33 @@ func (c *eventServiceClient) GetEventRegistrations(ctx context.Context, in *GetE
 	return out, nil
 }
 
+func (c *eventServiceClient) GetEventUserRegistration(ctx context.Context, in *GetEventUserRegistrationRequest, opts ...grpc.CallOption) (*GetEventUserRegistrationResponse, error) {
+	out := new(GetEventUserRegistrationResponse)
+	err := c.cc.Invoke(ctx, EventService_GetEventUserRegistration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventServiceClient) GetUserEvents(ctx context.Context, in *GetUserEventsRequest, opts ...grpc.CallOption) (*GetUserEventsResponse, error) {
+	out := new(GetUserEventsResponse)
+	err := c.cc.Invoke(ctx, EventService_GetUserEvents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventServiceClient) EditRegistration(ctx context.Context, in *EditRegistrationRequest, opts ...grpc.CallOption) (*EditRegistrationResponse, error) {
+	out := new(EditRegistrationResponse)
+	err := c.cc.Invoke(ctx, EventService_EditRegistration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServiceServer is the server API for EventService service.
 // All implementations should embed UnimplementedEventServiceServer
 // for forward compatibility
@@ -124,6 +157,9 @@ type EventServiceServer interface {
 	GetEvents(context.Context, *emptypb.Empty) (*GetEventsResponse, error)
 	RegisterForEvent(context.Context, *RegisterForEventRequest) (*RegisterForEventResponse, error)
 	GetEventRegistrations(context.Context, *GetEventRegistrationsRequest) (*GetEventRegistrationsResponse, error)
+	GetEventUserRegistration(context.Context, *GetEventUserRegistrationRequest) (*GetEventUserRegistrationResponse, error)
+	GetUserEvents(context.Context, *GetUserEventsRequest) (*GetUserEventsResponse, error)
+	EditRegistration(context.Context, *EditRegistrationRequest) (*EditRegistrationResponse, error)
 }
 
 // UnimplementedEventServiceServer should be embedded to have forward compatible implementations.
@@ -150,6 +186,15 @@ func (UnimplementedEventServiceServer) RegisterForEvent(context.Context, *Regist
 }
 func (UnimplementedEventServiceServer) GetEventRegistrations(context.Context, *GetEventRegistrationsRequest) (*GetEventRegistrationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEventRegistrations not implemented")
+}
+func (UnimplementedEventServiceServer) GetEventUserRegistration(context.Context, *GetEventUserRegistrationRequest) (*GetEventUserRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEventUserRegistration not implemented")
+}
+func (UnimplementedEventServiceServer) GetUserEvents(context.Context, *GetUserEventsRequest) (*GetUserEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserEvents not implemented")
+}
+func (UnimplementedEventServiceServer) EditRegistration(context.Context, *EditRegistrationRequest) (*EditRegistrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditRegistration not implemented")
 }
 
 // UnsafeEventServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -289,6 +334,60 @@ func _EventService_GetEventRegistrations_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EventService_GetEventUserRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEventUserRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).GetEventUserRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_GetEventUserRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).GetEventUserRegistration(ctx, req.(*GetEventUserRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventService_GetUserEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).GetUserEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_GetUserEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).GetUserEvents(ctx, req.(*GetUserEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventService_EditRegistration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditRegistrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).EditRegistration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_EditRegistration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).EditRegistration(ctx, req.(*EditRegistrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EventService_ServiceDesc is the grpc.ServiceDesc for EventService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +422,18 @@ var EventService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetEventRegistrations",
 			Handler:    _EventService_GetEventRegistrations_Handler,
+		},
+		{
+			MethodName: "GetEventUserRegistration",
+			Handler:    _EventService_GetEventUserRegistration_Handler,
+		},
+		{
+			MethodName: "GetUserEvents",
+			Handler:    _EventService_GetUserEvents_Handler,
+		},
+		{
+			MethodName: "EditRegistration",
+			Handler:    _EventService_EditRegistration_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

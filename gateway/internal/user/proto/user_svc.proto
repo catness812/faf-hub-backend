@@ -12,4 +12,6 @@ service UserService {
     rpc GoogleAuth(GoogleAuthRequest) returns (LoginResponse);
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
     rpc CheckAdmin(CheckAdminRequest) returns (CheckAdminResponse);
+    rpc CheckVerified(CheckVerifiedRequest) returns (CheckVerifiedResponse);
+    rpc VerifyUser(VerifyRequest) returns (VerifyResponse);
 }

@@ -40,9 +40,24 @@ func (repo *RegistrationRepository) GetUserEventRegistration(eventID uint, userI
 func (repo *RegistrationRepository) GetEventRegistrations(eventID uint) ([]models.Registration, error) {
 	var registrations []models.Registration
 	// add pagination
-	err := repo.db.Where("event_id = ?", eventID).Find(&registrations).Error
-	if err != nil {
+	if err := repo.db.Where("event_id = ?", eventID).Find(&registrations).Error; err != nil {
 		return nil, err
 	}
 	return registrations, nil
+}
+
+func (repo *RegistrationRepository) GetUserEventIDs(userID uint) ([]uint, error) {
+	var eventIDs []uint
+	if err := repo.db.Model(&models.Registration{}).Where("user_id = ?", userID).Pluck("event_id", &eventIDs).Error; err != nil {
+		return nil, err
+	}
+	return eventIDs, nil
+}
+
+func (repo *RegistrationRepository) UpdateRegistration(registration models.Registration) error {
+	err := repo.db.Updates(&registration).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

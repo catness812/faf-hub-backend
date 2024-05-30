@@ -1,0 +1,15 @@
+syntax="proto3";
+
+option go_package="./pb";
+import "content_msg.proto";
+// import "google/protobuf/empty.proto";
+
+package proto;
+
+service ContentService {
+    rpc PostContent(PostContentRequest) returns (PostContentResponse);
+    rpc EditContent(EditContentRequest) returns (EditContentResponse);
+    rpc DeleteContent(DeleteContentRequest) returns (DeleteContentResponse);
+    rpc GetContent(GetContentRequest) returns (GetContentResponse);
+    rpc GetAllContent(GetAllContentRequest) returns (GetAllContentResponse);
+}

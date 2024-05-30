@@ -13,7 +13,6 @@ type IUserRepository interface {
 	GetUserByEmail(email string) (models.User, error)
 	GetUserByID(userID uint) (models.User, error)
 	UpdateUser(user models.User) error
-	CheckAdmin(userID uint) (bool, error)
 }
 
 type UserService struct {
@@ -81,6 +80,13 @@ func (svc *UserService) GoogleLogUser(email string, firstName string, lastName s
 	user.Password = "-"
 	user.FirstName = firstName
 	user.LastName = lastName
+	user.Verified = true
+
+	if email == "board.faf@gmail.com" {
+		user.Admin = true
+	} else {
+		user.Admin = false
+	}
 
 	if err != nil {
 		if err.Error() == "user doesn't exist" {
@@ -141,13 +147,20 @@ func (svc *UserService) UpdateUser(userID uint, user models.UserInfo) error {
 	return nil
 }
 
-func (svc *UserService) CheckAdmin(userID uint) (bool, error) {
-	status, err := svc.userRepository.CheckAdmin(userID)
+func (svc *UserService) VerifyUser(userID uint) error {
+	user, err := svc.userRepository.GetUserByID(userID)
 	if err != nil {
-		slog.Errorf("Could not retrieve admin status: %v", err)
-		return false, err
+		slog.Errorf("Could not retrieve user: %v", err)
+		return err
 	}
 
-	slog.Info("User admin status successfully retrieved")
-	return status, nil
+	user.Verified = true
+
+	if err := svc.userRepository.UpdateUser(user); err != nil {
+		slog.Errorf("Could not update user: %v", err)
+		return err
+	}
+
+	slog.Info("User successfully verified")
+	return nil
 }

@@ -1,8 +1,6 @@
 package event
 
 import (
-	"os"
-
 	"github.com/catness812/faf-hub-backend/gateway/internal/event/pb"
 	"github.com/gookit/slog"
 	"google.golang.org/grpc"
@@ -10,7 +8,7 @@ import (
 )
 
 func InitEventServiceClient(eventSvcPort string) pb.EventServiceClient {
-	conn, err := grpc.Dial(os.Getenv("APP_HOST")+":"+eventSvcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("event_svc"+":"+eventSvcPort, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		slog.Fatalf("Could not connect: %v", err)

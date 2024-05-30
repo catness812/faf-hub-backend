@@ -16,4 +16,5 @@ type Registration struct {
 	FoodPreferences string `gorm:"not null" json:"food_pref"`
 	Motivation      string `gorm:"not null" json:"motivation"`
 	Questions       string `gorm:"not null" json:"questions"`
+	Feedback        string `gorm:"not null" json:"feedback"`
 }

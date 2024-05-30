@@ -14,4 +14,7 @@ service EventService {
     rpc GetEvents(google.protobuf.Empty) returns (GetEventsResponse);
     rpc RegisterForEvent(RegisterForEventRequest) returns (RegisterForEventResponse);
     rpc GetEventRegistrations(GetEventRegistrationsRequest) returns (GetEventRegistrationsResponse);
+    rpc GetEventUserRegistration(GetEventUserRegistrationRequest) returns (GetEventUserRegistrationResponse);
+    rpc GetUserEvents(GetUserEventsRequest) returns (GetUserEventsResponse);
+    rpc EditRegistration(EditRegistrationRequest) returns (EditRegistrationResponse);
 }
