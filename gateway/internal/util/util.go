@@ -115,3 +115,31 @@ func CheckVerified(ctx *fiber.Ctx) (bool, error) {
 
 	return res.Verified, nil
 }
+
+func SetCookie(ctx *fiber.Ctx, jwt string) {
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    jwt,
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour * 24),
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: "None",
+	}
+
+	ctx.Cookie(&cookie)
+}
+
+func RemoveCookie(ctx *fiber.Ctx) {
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: "None",
+	}
+
+	ctx.Cookie(&cookie)
+}

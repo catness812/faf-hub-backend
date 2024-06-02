@@ -102,7 +102,7 @@ services:
       - faf-hub-network
     depends_on:
       - rabbitmq
-    restart: always
+    restart: on-failure
 
   gateway:
     container_name: faf-hub-gateway

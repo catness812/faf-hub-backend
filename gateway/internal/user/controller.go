@@ -94,14 +94,7 @@ func (ctrl *UserController) Login(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    jwt,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	}
-
-	ctx.Cookie(&cookie)
+	util.SetCookie(ctx, jwt)
 
 	slog.Info("User logged in successfully")
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": res.Message})
@@ -198,14 +191,7 @@ func (ctrl *UserController) GoogleCallback(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    jwt,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	}
-
-	ctx.Cookie(&cookie)
+	util.SetCookie(ctx, jwt)
 
 	slog.Info("User logged in successfully")
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": res.Message})
@@ -248,14 +234,7 @@ func (ctrl *UserController) UpdateUser(ctx *fiber.Ctx) error {
 }
 
 func (ctrl *UserController) Logout(ctx *fiber.Ctx) error {
-	cookie := fiber.Cookie{
-		Name:     "jwt",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	}
-
-	ctx.Cookie(&cookie)
+	util.RemoveCookie(ctx)
 
 	slog.Info("User logged out successfully")
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "user logged out successfully"})

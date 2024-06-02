@@ -29,13 +29,19 @@ func main() {
 	redisDB := redis.Connect()
 	redisRepo := repository.NewRedisRepository(redisDB)
 	redisSvc := service.NewRedisService(redisRepo)
-	r := fiber.New()
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     os.Getenv("APP_URL") + "," + os.Getenv("FRONT_URL"),
+	app := fiber.New()
+
+	frontendURL := os.Getenv("FRONT_URL")
+	if frontendURL == "" {
+		panic("FRONT_URL environment variable not set")
+	}
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     frontendURL,
 		AllowCredentials: true,
 	}))
-	registerRoutes(r, redisSvc)
-	err := r.Listen(":" + os.Getenv("APP_PORT"))
+
+	registerRoutes(app, redisSvc)
+	err := app.Listen(":" + os.Getenv("APP_PORT"))
 	if err != nil {
 		slog.Fatalf("Failed to start server: %v", err)
 	}
