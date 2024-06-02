@@ -178,6 +178,7 @@ func (s *Server) GetEventRegistrations(_ context.Context, req *pb.GetEventRegist
 			FoodPref:      reg.FoodPreferences,
 			Motivation:    reg.Motivation,
 			Questions:     reg.Questions,
+			Feedback:      reg.Feedback,
 		}
 	}
 
@@ -205,6 +206,7 @@ func (s *Server) GetEventUserRegistration(_ context.Context, req *pb.GetEventUse
 		FoodPref:      reg.FoodPreferences,
 		Motivation:    reg.Motivation,
 		Questions:     reg.Questions,
+		Feedback:      reg.Feedback,
 	}
 
 	return &pb.GetEventUserRegistrationResponse{
