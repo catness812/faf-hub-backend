@@ -49,16 +49,16 @@ func (svc *EventService) UpdateEvent(eventID uint, event models.Event) error {
 	if event.Name != "" {
 		newEvent.Name = event.Name
 	}
-	if event.StartDateTime.Equal(time.Time{}) {
+	if !event.StartDateTime.Equal(time.Time{}) {
 		newEvent.StartDateTime = event.StartDateTime
 	}
-	if event.EndDateTime.Equal(time.Time{}) {
+	if !event.EndDateTime.Equal(time.Time{}) {
 		newEvent.EndDateTime = event.EndDateTime
 	}
 	if event.Location != "" {
 		newEvent.Location = event.Location
 	}
-	if event.ApplicationDeadline.Equal(time.Time{}) {
+	if !event.ApplicationDeadline.Equal(time.Time{}) {
 		newEvent.ApplicationDeadline = event.ApplicationDeadline
 	}
 	if event.Cover != "" {
