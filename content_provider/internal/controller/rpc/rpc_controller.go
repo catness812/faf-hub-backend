@@ -34,7 +34,7 @@ func (s *Server) PostContent(_ context.Context, req *pb.PostContentRequest) (*pb
 		Type:    req.Content.Type,
 		Name:    req.Content.Name,
 		Authors: req.Content.Authors,
-		Cover:   req.Content.Authors,
+		Cover:   req.Content.Cover,
 		Text:    req.Content.Text,
 		Views:   int(req.Content.Views),
 		Images:  string(imagesJSON),
